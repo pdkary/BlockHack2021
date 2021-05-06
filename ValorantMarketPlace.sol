@@ -11,14 +11,17 @@ contract ValorantMarketPlace {
     mapping (string => uint256) tokenPrices;
     mapping (string => bool) tokenListings;
     mapping (string => PlayerToken) tokens;
+    mapping (address => string[]) heldTokens;
     
-    uint256 initial_supply = 10e6;
+    uint256 initial_supply = 1e5;
     uint8 decimals = 4;
     
     uint256 fee_percent = 5; //5% vig
     
     event Buy(address buyer, string playerID, uint256 price, uint256 num_tokens);
     event Sell(address seller, string playerID, uint256 price, uint256 num_tokens);
+    event Mint(string playerID,string tokenName,string tokenSymbol,uint256 tokenPrice);
+    event Creation(address owner, uint256 pot);
     
     modifier onlyOwner {
         require(msg.sender == owner);
@@ -28,6 +31,7 @@ contract ValorantMarketPlace {
     constructor() payable {
         owner = msg.sender;
         pot = msg.value;
+        emit Creation(owner,pot);
     }
     
     function deposit() public payable onlyOwner {
@@ -40,9 +44,11 @@ contract ValorantMarketPlace {
     
     function mintToken(string calldata playerID,string calldata tokenName,string calldata tokenSymbol, uint256 tokenPrice) public onlyOwner returns (bool) {
         require(!tokenListings[playerID]);
+        // tokenIDs.push(playerID);
         tokens[playerID] = new PlayerToken(tokenName,tokenSymbol,initial_supply,decimals);
         tokenListings[playerID] = true;
         tokenPrices[playerID] = tokenPrice;
+        emit Mint(playerID,tokenName,tokenSymbol,tokenPrice);
         return true;
     }
     
@@ -87,6 +93,14 @@ contract ValorantMarketPlace {
         return pot;
     }
     
+    function getHeldTokens(address user) public view returns (string[] memory) {
+        return heldTokens[user];
+    }
+    
+    function getMyHeldTokens() public view returns (string[] memory) {
+        return heldTokens[msg.sender];
+    }
+    
     function buyToken(string calldata playerID) external payable returns(bool) {
         require(tokenListings[playerID]);
         PlayerToken token = tokens[playerID];
@@ -105,6 +119,7 @@ contract ValorantMarketPlace {
         success = success && token.transferFrom(address(this),msg.sender,tokens_received);
         
         emit Buy(msg.sender,playerID,tokenPrice,tokens_received);
+        heldTokens[msg.sender].push(playerID);
         
         //update pot
         pot = SafeMath.add(pot,msg.value);
@@ -133,10 +148,38 @@ contract ValorantMarketPlace {
         //return tokens to the house, get money
         token.transferFrom(msg.sender,address(this),count);
         payable(msg.sender).transfer(payout);
+        if(tokenBalance - count == 0){
+            remove_from_holdings(msg.sender,playerID);
+        }
         
         emit Sell(msg.sender,playerID,tokenPrice,count);
         
         //pot -= msg.value;
         pot = SafeMath.sub(pot,msg.value);
+    }
+    
+    
+    //--------------------------------------------UTILITY FUNCTIONS -------------------------------------------//
+    function compare_strings(string memory a, string memory b) internal pure returns (bool) {
+        return (keccak256(abi.encodePacked(a)) == keccak256(abi.encodePacked(b)));
+    }
+    
+    function remove_from_holdings(address holder, string memory playerID) internal {
+        
+        string[] memory holds = heldTokens[holder];
+        uint256 i = 0;
+        bool found = false;
+        uint256 len = holds.length;
+        for(i=0;i<len;i++){
+            string memory looking = holds[i];
+            if(compare_strings(playerID,looking))found=true;
+            if(found){
+                if(i!=len-1)holds[i]=holds[i+1];
+                else {
+                    delete holds[i];
+                }
+            }
+        }
+        heldTokens[holder] = holds;
     }
 }
