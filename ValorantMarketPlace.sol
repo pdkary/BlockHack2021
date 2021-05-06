@@ -87,7 +87,8 @@ contract ValorantMarketPlace {
         return pot;
     }
     
-    function buyToken(string calldata playerID) public payable returns(bool) {
+    function buyToken(string calldata playerID) external payable returns(bool) {
+        require(tokenListings[playerID]);
         PlayerToken token = tokens[playerID];
         
         uint256 tokenPrice = tokenPrices[playerID];
@@ -101,7 +102,7 @@ contract ValorantMarketPlace {
         //approve tokens for transfer from owner
         success = success && token.approve(msg.sender,tokens_received);
         //transfer tokens
-        success = success && token.transferFrom(owner,msg.sender,tokens_received);
+        success = success && token.transferFrom(address(this),msg.sender,tokens_received);
         
         emit Buy(msg.sender,playerID,tokenPrice,tokens_received);
         
@@ -110,11 +111,18 @@ contract ValorantMarketPlace {
         return success;
     }
     
-    function sellToken(string calldata playerID, uint256 count) public payable {
+    function approveSale(string calldata playerID, uint256 count) external payable returns (bool) {
+       PlayerToken token = tokens[playerID];
+       return token.approve_reverse(msg.sender,count);
+    }
+    
+    function sellToken(string calldata playerID, uint256 count) external payable {
         PlayerToken token = tokens[playerID];
+        
         uint256 tokenPrice = tokenPrices[playerID];
         uint256 cost = SafeMath.mul((100+fee_percent),tokenPrice) / 100;
-        
+        uint256 allowed = token.allowance(msg.sender,address(this));
+        require(allowed >= count);
         //make sure user has tokens to sell
         uint256 tokenBalance = token.balanceOf(msg.sender);
         require(tokenBalance >= count);
@@ -123,7 +131,7 @@ contract ValorantMarketPlace {
         require(pot >= payout);
         
         //return tokens to the house, get money
-        token.transferFrom(msg.sender,owner,count);
+        token.transferFrom(msg.sender,address(this),count);
         payable(msg.sender).transfer(payout);
         
         emit Sell(msg.sender,playerID,tokenPrice,count);
