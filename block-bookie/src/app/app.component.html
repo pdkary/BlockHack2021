@@ -1,1 +1,12 @@
-<button mat-stroked-button color="primary"></button>
+<mat-toolbar>
+  <span>Block-Bookie</span>
+</mat-toolbar>
+<mat-grid-list>
+</mat-grid-list>
+<h3>Currently Logged in Addresses</h3>
+<mat-chip-list>
+  <mat-chip *ngFor="let account of accounts" color="accent" selected>
+    {{account}}
+  </mat-chip>
+</mat-chip-list>
+<button mat-raised-button color="primary" (click)="button_action()">CLICK ME DADDY </button>
