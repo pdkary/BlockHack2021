@@ -27,9 +27,17 @@ export class MarketService {
   contract_abi: any = data;
   contract: any;
 
+
+  /// Dear morning time mengling
+
+
+  /// im storing way more data than i need to, please feel free to change the way the holdings are stored
+  //// the stupid ass website doesnt know the token names on load so you can remind it by using the "check token" function
   accounts: string[];
+  token_names: string[];
   holdings: Map<string, Map<string,Holding>>;
   tokens: Map<string, Token>;
+  user_holdings = [];
 
   pot: number = 0;
   minGas = 1e8;
@@ -38,6 +46,7 @@ export class MarketService {
   constructor(@Inject(WEB3) private web3: Web3) {
     this.pull_accounts();
     this.load_contract();
+    this.token_names = [];
     this.tokens = new Map();
     this.holdings = new Map();
   }
@@ -56,22 +65,45 @@ export class MarketService {
   }
 
   async update_token_holdings() {
-    let held_tokens = await this.contract.methods.getHeldTokens(this.accounts[0]).call();
+    // let held_tokens = await this.contract.methods.getHeldTokens(this.accounts[0]).call();
+    let held_tokens = this.token_names;
     let current_holdings = this.holdings.get(this.accounts[0]);
     for (let i of held_tokens) {
       let num_tokens = await this.contract.methods.getTokenBalance(i, this.accounts[0]).call();
       let new_holding: Holding = {holder: this.accounts[0],playerID:i,holdings:num_tokens};
-      current_holdings.set(i,new_holding);
+      if(!this.token_names.includes(i)){
+        this.token_names.push(i);
+      }
+      if( current_holdings != undefined){
+        current_holdings.set(i,new_holding);
+      }else{
+        let newmap = new Map();
+        newmap.set(i,new_holding);
+        this.holdings.set(this.accounts[0],newmap);
+        console.log(this.holdings);
+      }
     }
+    this.user_holdings = this.get_token_holdings();
   }
 
-  get_token_holdings(){
-    return this.holdings.get(this.accounts[0]);
+  get_token_holdings(): Holding[]{
+    let tokens_held: Holding[] = [];
+    let user_holdings: Map<string, Holding> = this.holdings.get(this.accounts[0]);
+    for(let i of this.token_names){
+      let h = user_holdings.get(i);
+      if(h != undefined){
+        tokens_held.push(h);
+      }
+    }
+    return tokens_held;
   }
 
   async get_token_value(playerID: string) {
     let price = await this.contract.methods.getPrice(playerID).call();
-    return price;
+    if(price && !this.token_names.includes(playerID)){
+      this.token_names.push(playerID);
+    }
+    this.update_token_holdings();
   }
 
   async buy_token(playerID: string, amount: number) {
@@ -95,11 +127,6 @@ export class MarketService {
     if (succ){
       this.update_token_holdings();
     }
-  }
-
-  async get_price(playerID: string): Promise<number> {
-    let price = await this.contract.methods.getPrice(playerID).call();
-    return price;
   }
 
   async update_price(playerID: string, new_price: number) {

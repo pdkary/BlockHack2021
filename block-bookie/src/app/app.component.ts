@@ -22,7 +22,8 @@ export class AppComponent {
     console.log(this.market.accounts);
     await this.market.load_contract();
     await this.market.get_pot();
-    await this.market.get_token_holdings();
+    await this.market.update_token_holdings();
+    console.log(this.market.token_names);
     
   }
 }

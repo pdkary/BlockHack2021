@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Output,EventEmitter } from '@angular/core';
 import { FormBuilder, FormControl } from '@angular/forms';
 import { Validators } from '@angular/forms';
 import { MarketService } from '../market.service';
@@ -13,6 +13,9 @@ export class CheckTokenComponent implements OnInit {
     ID: new FormControl('',[Validators.required]),
   })
 
+  @Output()
+  new_id: EventEmitter<string> = new EventEmitter<string>();
+
   constructor(private FB:FormBuilder, private market: MarketService) { }
 
   ngOnInit(): void {
@@ -21,7 +24,7 @@ export class CheckTokenComponent implements OnInit {
   onSubmit(){
     if(this.tokenForm.valid){
       let token_val = this.market.get_token_value(this.tokenForm.controls['ID'].value);
-      console.log(token_val);
+      this.new_id.emit(this.tokenForm.controls['ID'].value);
     }
   }
 }

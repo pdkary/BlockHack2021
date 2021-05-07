@@ -16,13 +16,9 @@
     </mat-grid-tile>
     
     <mat-grid-tile colspan="9" rowspan="4">
-      <mat-card *ngFor="let holding of market.holdings">
-        <mat-card-title>{{ holding.name }}</mat-card-title>
-        <mat-card-subtitle
-          >Holdings: {{ holding.holdings }} <br />
-          Cost: {{ holding.value }} <br />
-          Value: {{ holding.value * holding.holdings }}</mat-card-subtitle
-        >
+      <mat-card *ngFor="let holding of market.user_holdings">
+        <mat-card-title>{{ holding.playerID }}</mat-card-title>
+        <mat-card-subtitle>Holdings: {{ holding.holdings }}</mat-card-subtitle>
       </mat-card>
     </mat-grid-tile>
 
