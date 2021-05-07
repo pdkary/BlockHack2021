@@ -16,27 +16,29 @@
     </mat-grid-tile>
     
     <mat-grid-tile colspan="9" rowspan="4">
-      <mat-card *ngFor="let holding of market.holdings">
-        <mat-card-title>{{ holding.name }}</mat-card-title>
-        <mat-card-subtitle
-          >Holdings: {{ holding.holdings }} <br />
-          Cost: {{ holding.value }} <br />
-          Value: {{ holding.value * holding.holdings }}</mat-card-subtitle
-        >
+      <mat-card *ngFor="let holding of market.user_holdings">
+        <mat-card-title>{{ holding.playerID }}</mat-card-title>
+        <mat-card-subtitle>Holdings: {{ holding.holdings }}</mat-card-subtitle>
       </mat-card>
     </mat-grid-tile>
 
-    <mat-grid-tile colspan="2" rowspan="8">
+    <mat-grid-tile colspan="2" rowspan="10">
       <app-buy-form></app-buy-form>
     </mat-grid-tile>
     
     
-    <mat-grid-tile colspan="2" rowspan="8">
+    <mat-grid-tile colspan="2" rowspan="10">
       <app-sell-form></app-sell-form>
     </mat-grid-tile>
     
-    <mat-grid-tile colspan="4" rowspan="13">
+    <mat-grid-tile colspan="2" rowspan="8">
+      <app-update-price></app-update-price>
+    </mat-grid-tile>
+    <mat-grid-tile colspan="2" rowspan="13">
       <app-mint-form></app-mint-form>
+    </mat-grid-tile>
+    <mat-grid-tile colspan="2" rowspan="8">
+      <app-check-token></app-check-token>
     </mat-grid-tile>
   </mat-grid-list>
 </div>

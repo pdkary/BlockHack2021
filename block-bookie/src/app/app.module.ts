@@ -14,13 +14,17 @@ import { AppComponent } from './app.component';
 import { BuyFormComponent } from './buy-form/buy-form.component';
 import { MintFormComponent } from './mint-form/mint-form.component';
 import { SellFormComponent } from './sell-form/sell-form.component';
+import { UpdatePriceComponent } from './update-price/update-price.component';
+import { CheckTokenComponent } from './check-token/check-token.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     BuyFormComponent,
     SellFormComponent,
-    MintFormComponent
+    MintFormComponent,
+    UpdatePriceComponent,
+    CheckTokenComponent
   ],
   imports: [
     BrowserModule,
