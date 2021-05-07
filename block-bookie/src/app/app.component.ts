@@ -12,13 +12,14 @@ export class AppComponent {
   title = 'block-bookie';
 
   accounts: string[];
+  tokens: string[];
+  pot: number;
   constructor(public market: MarketService) { }
 
-  async button_action() {
-    this.accounts = await this.market.pull_accounts();
-  }
-
   async ngOnInit(){
-    this.button_action();
+    await this.market.load_contract();
+    await this.market.pull_accounts();
+    await this.market.get_pot();
+    await this.market.get_token_holdings();
   }
 }
