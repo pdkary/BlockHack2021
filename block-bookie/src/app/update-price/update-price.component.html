@@ -1,0 +1,19 @@
+<mat-card>
+  <mat-card-header>
+    <mat-card-title>Update Price</mat-card-title>
+  </mat-card-header>
+  <mat-card-content>
+    <form [formGroup]="priceForm">
+      <mat-form-field>
+        <mat-label>Player ID</mat-label>
+        <input matInput type="text" formControlName="ID" />
+      </mat-form-field>
+
+      <mat-form-field>
+        <mat-label>New Price</mat-label>
+        <input matInput type="text" formControlName="price" />
+      </mat-form-field>
+      <button mat-raised-button color="primary" (click)="onSubmit()">Buy</button>
+    </form>
+  </mat-card-content>
+</mat-card>
