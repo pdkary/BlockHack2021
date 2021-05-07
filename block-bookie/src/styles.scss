@@ -1,5 +1,5 @@
 /* You can add global styles to this file, and also import other style files */
-@import '@angular/material/prebuilt-themes/pink-bluegrey.css';
+@import '@angular/material/prebuilt-themes/indigo-pink.css';
 html, body { height: 100%; }
 body { 
     font-family: Roboto, "Helvetica Neue", sans-serif; 
@@ -11,14 +11,22 @@ body {
             padding:1em;
         }
     }
-    button {
-        margin: 1em;
-        padding: 1em;
-    }
     mat-grid-tile {
+        // background-color: gold;
+        form {
+            button {
+                width: fill;
+            }
+        }
         mat-card {
             float: left;
-            margin:1em;
+            margin: 0em 2em;
+        }
+        mat-form-field {
+            width:80%;
+            height: 50%;
+            padding: 1em;
+            // background-color: black;
         }
     }
 }

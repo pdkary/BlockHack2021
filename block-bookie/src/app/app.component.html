@@ -2,21 +2,34 @@
   <mat-toolbar-row>
     <h1>Block-Bookie</h1>
     <span class="spacer"></span>
-    <p>Current User: {{market.accounts[0]}}</p>
+    <p>Current User: {{ market.accounts[0] }}</p>
   </mat-toolbar-row>
   <mat-toolbar-row>
     <span class="spacer"></span>
-    <p>Current Pot: {{market.pot}}</p>
+    <p>Current Pot: {{ market.pot }}</p>
   </mat-toolbar-row>
 </mat-toolbar>
 <div>
   <mat-grid-list cols="6" rowHeight="10em">
     <mat-grid-tile colspan="6" rowspan="1">
       <mat-card *ngFor="let holding of market.holdings">
-        <mat-card-title>{{holding.name}}</mat-card-title>
-        <mat-card-subtitle>Holdings: {{holding.holdings}} <br> Cost: {{holding.value}} <br> Value: {{holding.value * holding.holdings}}</mat-card-subtitle>
+        <mat-card-title>{{ holding.name }}</mat-card-title>
+        <mat-card-subtitle
+          >Holdings: {{ holding.holdings }} <br />
+          Cost: {{ holding.value }} <br />
+          Value: {{ holding.value * holding.holdings }}</mat-card-subtitle
+        >
       </mat-card>
+    </mat-grid-tile>
+    <mat-grid-tile colspan="3" rowspan="2">
+      <app-buy-form></app-buy-form>
+    </mat-grid-tile>
+    
+    <mat-grid-tile colspan="3" rowspan="4">
+      <app-mint-form></app-mint-form>
+    </mat-grid-tile>
+    <mat-grid-tile colspan="3" rowspan="2">
+      <app-sell-form></app-sell-form>
     </mat-grid-tile>
   </mat-grid-list>
 </div>
-

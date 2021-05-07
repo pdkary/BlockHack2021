@@ -1,17 +1,25 @@
 import { NgModule } from '@angular/core';
-import { BrowserModule } from '@angular/platform-browser';
-
-import { AppComponent } from './app.component';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
-import { MatToolbarModule } from '@angular/material/toolbar';
+import { MatCardModule } from '@angular/material/card';
 import { MatChipsModule } from '@angular/material/chips';
+import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatGridListModule } from '@angular/material/grid-list';
-import {MatCardModule} from '@angular/material/card';
+import { MatInputModule } from '@angular/material/input';
+import { MatToolbarModule } from '@angular/material/toolbar';
+import { BrowserModule } from '@angular/platform-browser';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { AppComponent } from './app.component';
+import { BuyFormComponent } from './buy-form/buy-form.component';
+import { SellFormComponent } from './sell-form/sell-form.component';
+import { MintFormComponent } from './mint-form/mint-form.component';
 
 @NgModule({
   declarations: [
-    AppComponent
+    AppComponent,
+    BuyFormComponent,
+    SellFormComponent,
+    MintFormComponent
   ],
   imports: [
     BrowserModule,
@@ -20,9 +28,12 @@ import {MatCardModule} from '@angular/material/card';
     MatToolbarModule,
     MatChipsModule,
     MatGridListModule,
-    MatCardModule
+    FormsModule,
+    MatInputModule,
+    MatCardModule,
+    ReactiveFormsModule,
+    MatFormFieldModule,
   ],
-  providers: [],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

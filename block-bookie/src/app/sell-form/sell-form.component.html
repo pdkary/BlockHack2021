@@ -1,0 +1,19 @@
+<mat-card class="mat-elevation-z8">
+  <mat-card-header>
+    <mat-card-title>Sell Token</mat-card-title>
+  </mat-card-header>
+  <mat-card-content>
+    <form [formGroup]="sellForm">
+      <mat-form-field>
+        <mat-label>Player ID</mat-label>
+        <input matInput type="text" formControlName="ID" />
+      </mat-form-field>
+
+      <mat-form-field>
+        <mat-label>Amount</mat-label>
+        <input matInput type="text" formControlName="amount" />
+      </mat-form-field>
+      <button mat-raised-button color="primary" (click)="onSubmit()">Sell</button>
+    </form>
+  </mat-card-content>
+</mat-card>
