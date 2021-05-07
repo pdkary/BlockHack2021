@@ -6,7 +6,9 @@ import "./PlayerToken.sol";
 contract ValorantMarketPlace {
     using SafeMath for *;
     
-    address owner;
+    address owner1;
+    address owner2;
+
     uint256 pot;
     mapping (string => uint256) tokenPrices;
     mapping (string => bool) tokenListings;
@@ -21,17 +23,18 @@ contract ValorantMarketPlace {
     event Buy(address buyer, string playerID, uint256 price, uint256 num_tokens);
     event Sell(address seller, string playerID, uint256 price, uint256 num_tokens);
     event Mint(string playerID,string tokenName,string tokenSymbol,uint256 tokenPrice);
-    event Creation(address owner, uint256 pot);
+    event Creation(address owner1,address owner2, uint256 pot);
     
     modifier onlyOwner {
-        require(msg.sender == owner);
+        require(msg.sender == owner1 || msg.sender == owner2);
         _;
     }
     
-    constructor() payable {
-        owner = msg.sender;
+    constructor(address other_owner) payable {
+        owner1 = msg.sender;
+        owner2 = other_owner;
         pot = msg.value;
-        emit Creation(owner,pot);
+        emit Creation(owner1,owner2,pot);
     }
     
     function deposit() public payable onlyOwner {
@@ -44,14 +47,12 @@ contract ValorantMarketPlace {
     
     function mintToken(string calldata playerID,string calldata tokenName,string calldata tokenSymbol, uint256 tokenPrice) public onlyOwner returns (bool) {
         require(!tokenListings[playerID]);
-        // tokenIDs.push(playerID);
         tokens[playerID] = new PlayerToken(tokenName,tokenSymbol,initial_supply,decimals);
         tokenListings[playerID] = true;
         tokenPrices[playerID] = tokenPrice;
         emit Mint(playerID,tokenName,tokenSymbol,tokenPrice);
         return true;
     }
-    
     function getPrice(string calldata playerID) public view returns (uint256) {
         require(tokenListings[playerID]);
         return tokenPrices[playerID];
@@ -69,10 +70,6 @@ contract ValorantMarketPlace {
         return token.balanceOf(user);
     }
     
-    function getMyTokenBalance(string calldata playerID) public view returns (uint256){
-        return this.getTokenBalance(playerID,msg.sender);
-    }
-    
     function updatePrice(string calldata playerID,uint256 price) public onlyOwner {
         require(tokenListings[playerID]);
         tokenPrices[playerID] = price;
@@ -85,20 +82,12 @@ contract ValorantMarketPlace {
         return value;
     }
     
-    function getMyTokenValue(string calldata playerID) public view returns (uint256 value){
-        return this.getTokenValue(playerID,msg.sender);
-    }
-    
     function getPot() public view returns (uint256) {
         return pot;
     }
     
     function getHeldTokens(address user) public view returns (string[] memory) {
         return heldTokens[user];
-    }
-    
-    function getMyHeldTokens() public view returns (string[] memory) {
-        return heldTokens[msg.sender];
     }
     
     function buyToken(string calldata playerID) external payable returns(bool) {
@@ -135,7 +124,7 @@ contract ValorantMarketPlace {
         PlayerToken token = tokens[playerID];
         
         uint256 tokenPrice = tokenPrices[playerID];
-        uint256 cost = SafeMath.mul((100+fee_percent),tokenPrice) / 100;
+        uint256 cost = SafeMath.mul(100,tokenPrice) / (100+fee_percent);
         uint256 allowed = token.allowance(msg.sender,address(this));
         require(allowed >= count);
         //make sure user has tokens to sell
@@ -157,7 +146,6 @@ contract ValorantMarketPlace {
         //pot -= msg.value;
         pot = SafeMath.sub(pot,msg.value);
     }
-    
     
     //--------------------------------------------UTILITY FUNCTIONS -------------------------------------------//
     function compare_strings(string memory a, string memory b) internal pure returns (bool) {
