@@ -65,4 +65,8 @@ export class MarketService {
   async update_price(playerID: string, new_price: number){
     //this will require you to be an owner
   }
+
+  async mint_token(playerID:string,name:string,symbol:string,price: number){
+    
+  }
 }
