@@ -42,4 +42,27 @@ export class MarketService {
       this.holdings.push({name:i,holdings:num_holdings,value:price});
     }
   }
+
+  async get_token_value() {
+
+  }
+
+  async buy_token(playerID: string,amount: number){
+    //notice that this has a different input signature from the contract
+    // this is because the contract figures out the amount based on the amount of eth transfered to it during the invocation
+    // you will need to pass that value into the .send({}) when you call the method
+
+  }
+
+  async sell_token(playerID: string, amount: number){
+    //sell token takes it directly so thats easy peasy
+  }
+
+  async get_price(playerID: string){
+
+  }
+
+  async update_price(playerID: string, new_price: number){
+    //this will require you to be an owner
+  }
 }
