@@ -23,13 +23,16 @@ class Holding {
 })
 export class MarketService {
 
-  contract_hash = "0xbc58a9D1E9104e0B86a5566A647C23B0F31bbA2D";
-  contract_abi: any = data;
-  contract: any;
-
 
   /// Dear morning time mengling
 
+  /// this is working
+  // we should both be able to both make calls do onlyOwner functions
+  //owner1: 0x29c067f2da454948be4ab6b559f51250ae7e7de2
+  //owner2: 0x27a669e40cb2405938aeccf5f4bba8a92fe0b23b
+  contract_hash = "0xbc58a9D1E9104e0B86a5566A647C23B0F31bbA2D";
+  contract_abi: any = data;
+  contract: any;
 
   /// im storing way more data than i need to, please feel free to change the way the holdings are stored
   //// the stupid ass website doesnt know the token names on load so you can remind it by using the "check token" function
