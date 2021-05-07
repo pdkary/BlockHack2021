@@ -13,8 +13,9 @@ export class MarketService {
   contract_abi: any = data;
   accounts: string[];
   holdings = [];
+  values = [];
   pot: number;
-
+  minGas = 1e8;
   contract: any;
   constructor(@Inject(WEB3) private web3: Web3) {
     this.pull_accounts();
@@ -43,11 +44,13 @@ export class MarketService {
     }
   }
 
-  async get_token_value() {
-
+  async get_token_value(playerID: string) {
+    let price = await this.contract.methods.getPrice(playerID).call();
+    return price;
   }
 
   async buy_token(playerID: string,amount: number){
+
     //notice that this has a different input signature from the contract
     // this is because the contract figures out the amount based on the amount of eth transfered to it during the invocation
     // you will need to pass that value into the .send({}) when you call the method
@@ -64,5 +67,9 @@ export class MarketService {
 
   async update_price(playerID: string, new_price: number){
     //this will require you to be an owner
+  }
+  
+  async mint_token(playerID:string,name:string,symbol:string,price: number){
+    this.contract.methods.mintToken(playerID,name, symbol, price).send({from: this.accounts[0],gasPrice: this.minGas});
   }
 }

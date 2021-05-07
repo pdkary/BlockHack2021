@@ -3,7 +3,7 @@ import Web3 from 'web3';
 
 export const WEB3 = new InjectionToken<Web3>('web3', {
   providedIn: 'root',
-  factory: () => {
+   factory: () => {
     try {
       const provider = ('ethereum' in window) ? window['ethereum'] : Web3.givenProvider;
       console.log('provider found');
