@@ -51,6 +51,7 @@ export class MarketService {
 
   async buy_token(playerID: string,amount: number){
 
+    let buy = this.contract.methods.buyToken(playerID).send({from:this.accounts[0], gas:this.minGas})
     //notice that this has a different input signature from the contract
     // this is because the contract figures out the amount based on the amount of eth transfered to it during the invocation
     // you will need to pass that value into the .send({}) when you call the method
