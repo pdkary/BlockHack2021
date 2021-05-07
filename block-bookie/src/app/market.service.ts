@@ -30,7 +30,7 @@ export class MarketService {
   // we should both be able to both make calls do onlyOwner functions
   //owner1: 0x29c067f2da454948be4ab6b559f51250ae7e7de2
   //owner2: 0x27a669e40cb2405938aeccf5f4bba8a92fe0b23b
-  contract_hash = "0xbc58a9D1E9104e0B86a5566A647C23B0F31bbA2D";
+  contract_hash = "0x2c09B2f0CC55eD2B5593cE71e9054333913356dB";
   contract_abi: any = data;
   contract: any;
 
@@ -43,7 +43,7 @@ export class MarketService {
   user_holdings = [];
 
   pot: number = 0;
-  minGas = 1e8;
+  minGas = 1e10;
   initial_supply = 1e5;
 
   constructor(@Inject(WEB3) private web3: Web3) {
@@ -68,8 +68,9 @@ export class MarketService {
   }
 
   async update_token_holdings() {
-    // let held_tokens = await this.contract.methods.getHeldTokens(this.accounts[0]).call();
-    let held_tokens = this.token_names;
+    let held_tokens = await this.contract.methods.getHeldTokens(this.accounts[0]).call();
+    console.log(held_tokens);
+    // let held_tokens = this.token_names;
     let current_holdings = this.holdings.get(this.accounts[0]);
     for (let i of held_tokens) {
       let num_tokens = await this.contract.methods.getTokenBalance(i, this.accounts[0]).call();
@@ -110,7 +111,8 @@ export class MarketService {
   }
 
   async buy_token(playerID: string, amount: number) {
-    let total_val = this.tokens.get(playerID).price * amount;
+    let total_val = await this.contract.methods.getPrice(playerID).call();
+    console.log(total_val);
     let succ = await this.contract.methods.buyToken(playerID).send({
       from: this.accounts[0],
       minGas: this.minGas,
