@@ -14,9 +14,10 @@ contract ValorantMarketPlace {
     mapping(string => bool) tokenListings;
     mapping(string => PlayerToken) tokens;
     mapping(address => string[]) heldTokens;
+    string[] tokenIDs;
 
     uint256 initial_supply = 1e5;
-    uint8 decimals = 4;
+    uint8 decimals = 0;
 
     uint256 fee_percent = 5; //5% vig
 
@@ -73,8 +74,10 @@ contract ValorantMarketPlace {
             initial_supply,
             decimals
         );
+        tokenIDs.push(playerID);
         tokenListings[playerID] = true;
         tokenPrices[playerID] = tokenPrice;
+        heldTokens[msg.sender].push(playerID);
         emit Mint(playerID, tokenName, tokenSymbol, tokenPrice);
         return true;
     }
@@ -82,6 +85,17 @@ contract ValorantMarketPlace {
     function getPrice(string calldata playerID) public view returns (uint256) {
         require(tokenListings[playerID]);
         return tokenPrices[playerID];
+    }
+    
+    function getCost(string calldata playerID)public view returns (uint256){
+        uint256 tokenPrice = tokenPrices[playerID];
+        uint256 multiplier = (100 + fee_percent) /100;
+        uint256 cost = SafeMath.mul(multiplier, tokenPrice);
+        return cost;
+    }
+    
+    function getAllTokens() public view returns (string[] memory){
+        return tokenIDs;
     }
 
     function getTotalSupply(string calldata playerID)
@@ -142,7 +156,7 @@ contract ValorantMarketPlace {
         PlayerToken token = tokens[playerID];
 
         uint256 tokenPrice = tokenPrices[playerID];
-        uint256 multiplier = (100 + fee_percent) * (10**(decimals - 2));
+        uint256 multiplier = (100 + fee_percent) / 100;
         uint256 cost = SafeMath.mul(multiplier, tokenPrice);
 
         uint256 tokens_received = msg.value / cost;
@@ -150,8 +164,6 @@ contract ValorantMarketPlace {
         //assert that mesage holds enough value for this transaction
         require(msg.value >= cost);
         bool success = true;
-        //approve tokens for transfer from owner
-        success = success && token.approve(msg.sender, tokens_received);
         //transfer tokens
         success =
             success &&
@@ -164,16 +176,7 @@ contract ValorantMarketPlace {
         pot = SafeMath.add(pot, msg.value);
         return success;
     }
-
-    function approveSale(string calldata playerID, uint256 count)
-        external
-        payable
-        returns (bool)
-    {
-        PlayerToken token = tokens[playerID];
-        return token.approve_reverse(msg.sender, count);
-    }
-
+    
     function sellToken(string calldata playerID, uint256 count)
         external
         payable
@@ -182,11 +185,9 @@ contract ValorantMarketPlace {
         PlayerToken token = tokens[playerID];
 
         uint256 tokenPrice = tokenPrices[playerID];
-        uint256 multiplier = (10**(decimals + 2)) / (100 + fee_percent);
+        uint256 multiplier = 100 / (100 + fee_percent);
         uint256 cost = SafeMath.mul(multiplier, tokenPrice);
-        uint256 allowed = token.allowance(msg.sender, address(this));
-
-        require(allowed >= count);
+        
         //make sure user has tokens to sell
         uint256 tokenBalance = token.balanceOf(msg.sender);
         require(tokenBalance >= count);

@@ -18,11 +18,7 @@ export class AppComponent {
   constructor(public market: MarketService) { }
 
   async ngOnInit(){
-    await this.market.pull_accounts();
-    console.log(this.market.accounts);
-    await this.market.load_contract();
-    await this.market.get_pot();
-    await this.market.update_token_holdings();
+    await this.market.update_all_data();
     console.log(this.market.token_names);
     
   }
