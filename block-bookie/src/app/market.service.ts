@@ -34,8 +34,9 @@ export class MarketService {
   contract: any;
   accounts: string[];
   token_names: string[];
-  holdings: Map<string, Map<string,Holding>>;
+  holdings: Map<string, Holding[]>;
   tokens: Map<string, Token>;
+
   user_holdings = [];
 
   pot: number = 0;
@@ -44,9 +45,15 @@ export class MarketService {
 
   constructor(@Inject(WEB3) private web3: Web3) {
     this.pull_accounts();
-    this.load_contract();
+    this.load_contract().then( () => {
+      this.load_all_tokens();
+      this.update_token_holdings();
+    });
   }
 
+  async load_all_tokens() {
+    this.token_names = await this.contract.methods.getAllTokens().call();
+  }
   async pull_accounts() {
     console.log(this.web3.currentProvider);
     this.accounts = await this.web3.eth.getAccounts();
@@ -62,37 +69,18 @@ export class MarketService {
 
   async update_token_holdings() {
     let held_tokens = await this.contract.methods.getHeldTokens(this.accounts[0]).call();
-    console.log(held_tokens);
-    // let held_tokens = this.token_names;
-    let current_holdings = this.holdings.get(this.accounts[0]);
+    let current_holdings: Holding[] = this.holdings.get(this.accounts[0]);
     for (let i of held_tokens) {
       let num_tokens = await this.contract.methods.getTokenBalance(i, this.accounts[0]).call();
       let new_holding: Holding = {holder: this.accounts[0],playerID:i,holdings:num_tokens};
-      if(!this.token_names.includes(i)){
-        this.token_names.push(i);
-      }
       if( current_holdings != undefined){
-        current_holdings.set(i,new_holding);
+        current_holdings.push(new_holding);
       }else{
-        let newmap = new Map();
-        newmap.set(i,new_holding);
-        this.holdings.set(this.accounts[0],newmap);
-        console.log(this.holdings);
+        let new_holdings: Holding[] = [new_holding];
+        this.holdings.set(this.accounts[0],new_holdings);
       }
     }
-    this.user_holdings = this.get_token_holdings();
-  }
-
-  get_token_holdings(): Holding[]{
-    let tokens_held: Holding[] = [];
-    let user_holdings: Map<string, Holding> = this.holdings.get(this.accounts[0]);
-    for(let i of this.token_names){
-      let h = user_holdings.get(i);
-      if(h != undefined){
-        tokens_held.push(h);
-      }
-    }
-    return tokens_held;
+    this.user_holdings = this.holdings.get(this.accounts[0]);
   }
 
   async get_token_value(playerID: string) {
