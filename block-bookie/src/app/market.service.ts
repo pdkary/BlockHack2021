@@ -2,7 +2,6 @@ import { Injectable, Inject } from '@angular/core';
 import { WEB3 } from './web3';
 import Web3 from 'web3';
 import data from "../ValorantMarketPlace.json";
-import { Address } from 'cluster';
 
 class Token {
   public id: string;
@@ -33,9 +32,6 @@ export class MarketService {
   contract_hash = "0xA3C3D734baF3922d89a9dE00F59c9d022745D17E";
   contract_abi: any = data;
   contract: any;
-
-  /// im storing way more data than i need to, please feel free to change the way the holdings are stored
-  //// the stupid ass website doesnt know the token names on load so you can remind it by using the "check token" function
   accounts: string[];
   token_names: string[];
   holdings: Map<string, Map<string,Holding>>;
@@ -49,9 +45,6 @@ export class MarketService {
   constructor(@Inject(WEB3) private web3: Web3) {
     this.pull_accounts();
     this.load_contract();
-    this.token_names = [];
-    this.tokens = new Map();
-    this.holdings = new Map();
   }
 
   async pull_accounts() {
@@ -60,7 +53,7 @@ export class MarketService {
   }
 
   async load_contract() {
-    this.contract = await new this.web3.eth.Contract(this.contract_abi.abi, this.contract_hash);
+    this.contract = await new this.web3.eth.Contract(this.contract_abi.abi,this.contract_hash);
   }
 
   async get_pot() {
@@ -104,10 +97,7 @@ export class MarketService {
 
   async get_token_value(playerID: string) {
     let price = await this.contract.methods.getPrice(playerID).call();
-    if(price && !this.token_names.includes(playerID)){
-      this.token_names.push(playerID);
-    }
-    this.update_token_holdings();
+    return price;
   }
 
   async buy_token(playerID: string, amount: number) {
@@ -139,12 +129,8 @@ export class MarketService {
     await this.contract.methods.updatePrice(playerID, new_price).send({ from: this.accounts[0], minGas: this.minGas });
     this.tokens.get(playerID).price = new_price;
   }
-
-  async mint_token(playerID: string, name: string, symbol: string, price: number) {
-    let success: boolean = await this.contract.methods.mintToken(playerID, name, symbol, price).send({ from: this.accounts[0], gasPrice: this.minGas });
-    if (success) {
-      let t = { "id": playerID, "name": name, "symbol": symbol, "price": price, "supply": this.initial_supply } as Token;
-      this.tokens.set(playerID, t);
-    }
+  
+  async mint_token(playerID:string,name:string,symbol:string,price: number){
+    this.contract.methods.mintToken(playerID,name, symbol, price).send({from: this.accounts[0],gasPrice: this.minGas});
   }
 }
