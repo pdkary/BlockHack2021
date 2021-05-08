@@ -2,13 +2,11 @@ import { Injectable, Inject } from '@angular/core';
 import { WEB3 } from './web3';
 import Web3 from 'web3';
 import data from "../ValorantMarketPlace.json";
+import values from "../values.json";
 
-class Token {
-  public id: string;
-  public name: string;
-  public symbol: string;
-  public price: number;
-  public supply: number;
+class PlayerData {
+  public price:number;
+  public link: string;
 }
 
 class Holding {
@@ -30,7 +28,7 @@ export class MarketService {
   // we should both be able to both make calls do onlyOwner functions
   //owner1: 0x29c067f2da454948be4ab6b559f51250ae7e7de2
   //owner2: 0x27a669e40cb2405938aeccf5f4bba8a92fe0b23b
-  contract_hash = "0xE1F1D27FedFEbCC3C97591b92FD6A15DE926714e";
+  contract_hash = "0xa307ba429C43C9615bA417583279acF7b61D0545";
   contract_abi: any = data;
   contract: any;
   accounts: string[];
@@ -38,6 +36,10 @@ export class MarketService {
   prices: Map<string, number>;
 
   user_holdings: Map<string,Holding>;
+
+  player_data: Map<string,PlayerData>;
+  player_names: string[];
+  player_labels: string[];
 
   pot: number = 0;
   minGas = 1e10;
@@ -48,7 +50,17 @@ export class MarketService {
     this.user_holdings = new Map();
     this.token_names = [];
     this.accounts = [];
+    this.player_labels = [];
+    this.player_names = Object.keys(values);
+    this.player_data = new Map();
     this.update_all_data();
+    for( let i of Object.keys(values)){
+      let p = {price:values[i][0],link:values[i][1]} as PlayerData;
+      let c = i + ": " + p.price;
+      this.player_labels.push(c);
+      this.player_data.set(i,p);
+    }
+
   }
 
   async update_all_data() {

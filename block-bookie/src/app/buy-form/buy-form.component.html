@@ -4,15 +4,18 @@
   </mat-card-header>
   <mat-card-content>
     <form [formGroup]="buyForm">
-      <mat-form-field>
+      <mat-form-field appearance="fill">
         <mat-label>Player ID</mat-label>
-        <input matInput type="text" formControlName="ID" />
+        <mat-select  formControlName="ID" (change)="updateVals()">
+          <mat-option *ngFor="let name of token_names" [value]="name">{{name}}</mat-option>
+        </mat-select>
       </mat-form-field>
 
       <mat-form-field>
         <mat-label>Amount</mat-label>
-        <input matInput type="text" formControlName="amount" />
+        <input matInput type="text" formControlName="amount" (change)="updateVals()"/>
       </mat-form-field>
+      
       <button mat-raised-button color="primary" (click)="onSubmit()">Buy</button>
     </form>
   </mat-card-content>

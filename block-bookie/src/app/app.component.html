@@ -1,6 +1,6 @@
 <mat-toolbar>
   <mat-toolbar-row>
-    <h1>Block-Bookie</h1>
+    <h1>BlockBookie</h1>
     <span class="spacer"></span>
     <p>Current User: {{ market.accounts[0] }}</p>
   </mat-toolbar-row>
@@ -9,37 +9,95 @@
     <p>Current Pot: {{ market.pot }}</p>
   </mat-toolbar-row>
 </mat-toolbar>
-<div>
-  <mat-grid-list cols="9" rowHeight="2.5em">
-    <mat-grid-tile colspan="9" rowspan="1">
-    <h1> Current Holdings </h1>
-    </mat-grid-tile>
-    
-    <mat-grid-tile colspan="9" rowspan="4">
-      <mat-card *ngFor="let holding of market.user_holdings.values()">
-        <mat-card-title>{{ holding.playerID }}</mat-card-title>
-        <mat-card-subtitle>Holdings: {{ holding.holdings }}</mat-card-subtitle>
-        <mat-card-subtitle>Value: {{ holding.holdings * holding.price }}</mat-card-subtitle>
-      </mat-card>
-    </mat-grid-tile>
+<mat-tab-group animationDuration="0ms">
+  <mat-tab label="Viewer">
+    <mat-grid-list cols="9" rowHeight="2.5em">
+      <mat-grid-tile colspan="9" rowspan="1">
+        <h1>Current Holdings</h1>
+      </mat-grid-tile>
 
-    <mat-grid-tile colspan="2" rowspan="10">
-      <app-buy-form></app-buy-form>
-    </mat-grid-tile>
-    
-    
-    <mat-grid-tile colspan="2" rowspan="10">
-      <app-sell-form></app-sell-form>
-    </mat-grid-tile>
-    
-    <mat-grid-tile colspan="2" rowspan="8">
-      <app-update-price></app-update-price>
-    </mat-grid-tile>
-    <mat-grid-tile colspan="2" rowspan="13">
-      <app-mint-form></app-mint-form>
-    </mat-grid-tile>
-    <mat-grid-tile colspan="2" rowspan="8">
-      <app-check-token></app-check-token>
-    </mat-grid-tile>
-  </mat-grid-list>
-</div>
+      <mat-grid-tile colspan="9" rowspan="4">
+        <mat-card
+          *ngFor="let holding of market.user_holdings.values()"
+          class="mat-elevation-z8"
+        >
+          <mat-card-title>{{ holding.playerID }}</mat-card-title>
+          <mat-card-subtitle
+            >Holdings: {{ holding.holdings }}</mat-card-subtitle
+          >
+          <mat-card-subtitle
+            >Value: {{ holding.holdings * holding.price }}</mat-card-subtitle
+          >
+        </mat-card>
+      </mat-grid-tile>
+      <mat-grid-tile colspan="9" [rowspan]="market.player_labels.length">
+        <mat-list>
+          <mat-list-item *ngFor="let name of market.player_labels">{{name}}</mat-list-item>
+        </mat-list>
+      </mat-grid-tile>
+    </mat-grid-list>
+  </mat-tab>
+  <mat-tab label="Buy/Sell">
+    <mat-grid-list cols="4" rowHeight="2.5em">
+      <mat-grid-tile colspan="4" rowspan="1">
+        <h1>Current Holdings</h1>
+      </mat-grid-tile>
+
+      <mat-grid-tile colspan="4" rowspan="4">
+        <mat-card
+          *ngFor="let holding of market.user_holdings.values()"
+          class="mat-elevation-z8"
+        >
+          <mat-card-title>{{ holding.playerID }}</mat-card-title>
+          <mat-card-subtitle
+            >Holdings: {{ holding.holdings }}</mat-card-subtitle
+          >
+          <mat-card-subtitle
+            >Value: {{ holding.holdings * holding.price }}</mat-card-subtitle
+          >
+        </mat-card>
+      </mat-grid-tile>
+
+      <mat-grid-tile colspan="2" rowspan="10">
+        <app-buy-form></app-buy-form>
+      </mat-grid-tile>
+
+      <mat-grid-tile colspan="2" rowspan="10">
+        <app-sell-form></app-sell-form>
+      </mat-grid-tile>
+    </mat-grid-list>
+  </mat-tab>
+  <mat-tab label="Admin">
+    <mat-grid-list cols="6" rowHeight="2.5em">
+      <mat-grid-tile colspan="6" rowspan="1">
+        <h1>Current Holdings</h1>
+      </mat-grid-tile>
+
+      <mat-grid-tile colspan="6" rowspan="4">
+        <mat-card
+          *ngFor="let holding of market.user_holdings.values()"
+          class="mat-elevation-z8"
+        >
+          <mat-card-title>{{ holding.playerID }}</mat-card-title>
+          <mat-card-subtitle
+            >Holdings: {{ holding.holdings }}</mat-card-subtitle
+          >
+          <mat-card-subtitle
+            >Value: {{ holding.holdings * holding.price }}</mat-card-subtitle
+          >
+        </mat-card>
+      </mat-grid-tile>
+
+      <mat-grid-tile colspan="2" rowspan="8">
+        <app-update-price></app-update-price>
+      </mat-grid-tile>
+      <mat-grid-tile colspan="2" rowspan="13">
+        <app-mint-form></app-mint-form>
+      </mat-grid-tile>
+      <mat-grid-tile colspan="2" rowspan="8">
+        <app-check-token></app-check-token>
+      </mat-grid-tile>
+    </mat-grid-list>
+  </mat-tab>
+</mat-tab-group>
+<div></div>

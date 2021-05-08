@@ -5,6 +5,8 @@ import { MatCardModule } from '@angular/material/card';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatSelectModule } from '@angular/material/select';
+
 import { MatGridListModule } from '@angular/material/grid-list';
 import { MatInputModule } from '@angular/material/input';
 import { MatToolbarModule } from '@angular/material/toolbar';
@@ -16,6 +18,8 @@ import { MintFormComponent } from './mint-form/mint-form.component';
 import { SellFormComponent } from './sell-form/sell-form.component';
 import { UpdatePriceComponent } from './update-price/update-price.component';
 import { CheckTokenComponent } from './check-token/check-token.component';
+import { MatTabsModule } from '@angular/material/tabs';
+import { MatListModule } from '@angular/material/list';
 
 @NgModule({
   declarations: [
@@ -27,6 +31,7 @@ import { CheckTokenComponent } from './check-token/check-token.component';
     CheckTokenComponent
   ],
   imports: [
+    MatSelectModule,
     BrowserModule,
     BrowserAnimationsModule,
     MatButtonModule,
@@ -39,6 +44,8 @@ import { CheckTokenComponent } from './check-token/check-token.component';
     ReactiveFormsModule,
     MatFormFieldModule,
     MatDividerModule,
+    MatTabsModule,
+    MatListModule
   ],
   bootstrap: [AppComponent]
 })

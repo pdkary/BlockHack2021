@@ -20,6 +20,5 @@ export class AppComponent {
   async ngOnInit(){
     await this.market.update_all_data();
     console.log(this.market.token_names);
-    
   }
 }

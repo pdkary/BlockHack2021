@@ -86,15 +86,12 @@ contract ValorantMarketPlace {
         require(tokenListings[playerID]);
         return tokenPrices[playerID];
     }
-    
-    function getCost(string calldata playerID)public view returns (uint256){
-        uint256 tokenPrice = tokenPrices[playerID];
-        uint256 multiplier = (100 + fee_percent) /100;
-        uint256 cost = SafeMath.mul(multiplier, tokenPrice);
-        return cost;
+
+    function getCost(string calldata playerID) public view returns (uint256) {
+        return ((100 + fee_percent) * tokenPrices[playerID]) / 100;
     }
-    
-    function getAllTokens() public view returns (string[] memory){
+
+    function getAllTokens() public view returns (string[] memory) {
         return tokenIDs;
     }
 
@@ -157,7 +154,7 @@ contract ValorantMarketPlace {
 
         uint256 tokenPrice = tokenPrices[playerID];
         uint256 multiplier = 100 + fee_percent;
-        uint256 cost = SafeMath.mul(multiplier, tokenPrice)/100;
+        uint256 cost = SafeMath.mul(multiplier, tokenPrice) / 100;
 
         uint256 tokens_received = msg.value / cost;
 
@@ -176,7 +173,7 @@ contract ValorantMarketPlace {
         pot = SafeMath.add(pot, msg.value);
         return success;
     }
-    
+
     function sellToken(string calldata playerID, uint256 count)
         external
         payable
@@ -186,8 +183,9 @@ contract ValorantMarketPlace {
 
         uint256 tokenPrice = tokenPrices[playerID];
         uint256 multiplier = 100;
-        uint256 cost = SafeMath.mul(multiplier, tokenPrice)/ (100 + fee_percent);
-        
+        uint256 cost =
+            SafeMath.mul(multiplier, tokenPrice) / (100 + fee_percent);
+
         //make sure user has tokens to sell
         uint256 tokenBalance = token.balanceOf(msg.sender);
         require(tokenBalance >= count);
@@ -199,7 +197,7 @@ contract ValorantMarketPlace {
         token.transferFrom(msg.sender, address(this), count);
         payable(msg.sender).transfer(payout);
         if (tokenBalance - count == 0) {
-            remove_from_holdings(msg.sender, playerID);
+            heldTokens[msg.sender] = remove_from_holdings(msg.sender, playerID);
         }
 
         emit Sell(msg.sender, playerID, tokenPrice, count);
@@ -221,28 +219,26 @@ contract ValorantMarketPlace {
 
     function remove_from_holdings(address holder, string memory playerID)
         internal
+        view
+        returns (string[] memory)
     {
-        string[] memory holds = heldTokens[holder];
-        uint256 i = 0;
-        bool found = false;
-        uint256 len = holds.length;
-        for (i = 0; i < len; i++) {
-            string memory looking = holds[i];
-            if (compare_strings(playerID, looking)) found = true;
-            if (found) {
-                if (i != len - 1) holds[i] = holds[i + 1];
-                else {
-                    delete holds[i];
-                }
+        string[] storage holds = heldTokens[holder];
+        string[] memory new_holds = new string[](holds.length - 1);
+        for (uint256 i = 0; i < holds.length; i++) {
+            if (!compare_strings(holds[i], playerID)) {
+                new_holds[i] = holds[i];
             }
         }
-        heldTokens[holder] = holds;
+        return new_holds;
     }
 
-    function add_to_holdings(address user, string calldata playerID) public returns (string[] memory) {
+    function add_to_holdings(address user, string calldata playerID)
+        public
+        returns (string[] memory)
+    {
         string[] storage held_tokens = heldTokens[user];
-        for(uint i=0;i<held_tokens.length;i++){
-            if(compare_strings(held_tokens[i], playerID)){
+        for (uint256 i = 0; i < held_tokens.length; i++) {
+            if (compare_strings(held_tokens[i], playerID)) {
                 return held_tokens;
             }
         }
