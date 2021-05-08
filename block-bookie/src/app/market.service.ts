@@ -30,7 +30,7 @@ export class MarketService {
   // we should both be able to both make calls do onlyOwner functions
   //owner1: 0x29c067f2da454948be4ab6b559f51250ae7e7de2
   //owner2: 0x27a669e40cb2405938aeccf5f4bba8a92fe0b23b
-  contract_hash = "0x2c09B2f0CC55eD2B5593cE71e9054333913356dB";
+  contract_hash = "0xA3C3D734baF3922d89a9dE00F59c9d022745D17E";
   contract_abi: any = data;
   contract: any;
 
