@@ -30,14 +30,14 @@ export class MarketService {
   // we should both be able to both make calls do onlyOwner functions
   //owner1: 0x29c067f2da454948be4ab6b559f51250ae7e7de2
   //owner2: 0x27a669e40cb2405938aeccf5f4bba8a92fe0b23b
-  contract_hash = "0x8d52F69DbF396328473e4728a659D9B27dCa0Ea4 ";
+  contract_hash = "0x8d52F69DbF396328473e4728a659D9B27dCa0Ea4";
   contract_abi: any = data;
   contract: any;
   accounts: string[];
   token_names: string[];
   prices: Map<string, number>;
 
-  user_holdings: Holding[] = [];
+  user_holdings: Map<string,Holding>;
 
   pot: number = 0;
   minGas = 1e10;
@@ -45,6 +45,7 @@ export class MarketService {
 
   constructor(@Inject(WEB3) private web3: Web3) {
     this.prices = new Map();
+    this.user_holdings = new Map();
     this.token_names = [];
     this.accounts = [];
     this.update_all_data();
@@ -85,13 +86,14 @@ export class MarketService {
   }
 
   async update_token_holdings() {
-    this.user_holdings = [];
     let held_tokens = await this.contract.methods.getHeldTokens(this.accounts[0]).call();
+    console.log(held_tokens);
     for (let i of held_tokens) {
       let h = await this.contract.methods.getTokenBalance(i, this.accounts[0]).call();
       let p = await this.contract.methods.getPrice(i).call();
+      console.log(i);
       let new_holding: Holding = { holder: this.accounts[0], playerID: i, holdings: h, price: p } as Holding;
-      this.user_holdings.push(new_holding);
+      this.user_holdings.set(i,new_holding);
     }
   }
 
