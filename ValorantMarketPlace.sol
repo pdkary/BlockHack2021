@@ -156,8 +156,8 @@ contract ValorantMarketPlace {
         PlayerToken token = tokens[playerID];
 
         uint256 tokenPrice = tokenPrices[playerID];
-        uint256 multiplier = (100 + fee_percent) / 100;
-        uint256 cost = SafeMath.mul(multiplier, tokenPrice);
+        uint256 multiplier = 100 + fee_percent;
+        uint256 cost = SafeMath.mul(multiplier, tokenPrice)/100;
 
         uint256 tokens_received = msg.value / cost;
 
@@ -170,7 +170,7 @@ contract ValorantMarketPlace {
             token.transferFrom(address(this), msg.sender, tokens_received);
 
         emit Buy(msg.sender, playerID, tokenPrice, tokens_received);
-        heldTokens[msg.sender].push(playerID);
+        heldTokens[msg.sender] = this.add_to_holdings(msg.sender, playerID);
 
         //update pot
         pot = SafeMath.add(pot, msg.value);
@@ -185,8 +185,8 @@ contract ValorantMarketPlace {
         PlayerToken token = tokens[playerID];
 
         uint256 tokenPrice = tokenPrices[playerID];
-        uint256 multiplier = 100 / (100 + fee_percent);
-        uint256 cost = SafeMath.mul(multiplier, tokenPrice);
+        uint256 multiplier = 100;
+        uint256 cost = SafeMath.mul(multiplier, tokenPrice)/ (100 + fee_percent);
         
         //make sure user has tokens to sell
         uint256 tokenBalance = token.balanceOf(msg.sender);
@@ -237,5 +237,16 @@ contract ValorantMarketPlace {
             }
         }
         heldTokens[holder] = holds;
+    }
+
+    function add_to_holdings(address user, string calldata playerID) public returns (string[] memory) {
+        string[] storage held_tokens = heldTokens[user];
+        for(uint i=0;i<held_tokens.length;i++){
+            if(compare_strings(held_tokens[i], playerID)){
+                return held_tokens;
+            }
+        }
+        held_tokens.push(playerID);
+        return held_tokens;
     }
 }

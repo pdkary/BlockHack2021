@@ -107,7 +107,7 @@ export class MarketService {
     let succ = await this.contract.methods.buyToken(playerID).send({
       from: this.accounts[0],
       minGas: this.minGas,
-      value: total_val
+      value: total_val*amount
     });
     if (succ) {
       this.update_token_holdings();
