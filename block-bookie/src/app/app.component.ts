@@ -12,6 +12,8 @@ import { MarketService } from './market.service';
 export class AppComponent {
   title = 'block-bookie';
 
+  displayedColumns = ['name','price']
+
   accounts: string[];
   tokens: string[];
   pot: number;

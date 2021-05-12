@@ -20,6 +20,8 @@ import { UpdatePriceComponent } from './update-price/update-price.component';
 import { CheckTokenComponent } from './check-token/check-token.component';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatListModule } from '@angular/material/list';
+import {MatTableModule} from '@angular/material/table';
+import {MatPaginatorModule} from '@angular/material/paginator';
 
 @NgModule({
   declarations: [
@@ -45,7 +47,9 @@ import { MatListModule } from '@angular/material/list';
     MatFormFieldModule,
     MatDividerModule,
     MatTabsModule,
-    MatListModule
+    MatTableModule,
+    MatListModule,
+    MatPaginatorModule
   ],
   bootstrap: [AppComponent]
 })

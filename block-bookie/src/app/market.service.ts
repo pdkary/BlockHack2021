@@ -5,6 +5,7 @@ import data from "../ValorantMarketPlace.json";
 import values from "../values.json";
 
 class PlayerData {
+  public name: string;
   public price:number;
   public link: string;
 }
@@ -28,7 +29,7 @@ export class MarketService {
   // we should both be able to both make calls do onlyOwner functions
   //owner1: 0x29c067f2da454948be4ab6b559f51250ae7e7de2
   //owner2: 0x27a669e40cb2405938aeccf5f4bba8a92fe0b23b
-  contract_hash = "0xa307ba429C43C9615bA417583279acF7b61D0545";
+  contract_hash = "0x2e14Da745db090588278CD1E482eDD2402BB0c29";
   contract_abi: any = data;
   contract: any;
   accounts: string[];
@@ -37,7 +38,7 @@ export class MarketService {
 
   user_holdings: Map<string,Holding>;
 
-  player_data: Map<string,PlayerData>;
+  player_data: PlayerData[];
   player_names: string[];
   player_labels: string[];
 
@@ -50,15 +51,12 @@ export class MarketService {
     this.user_holdings = new Map();
     this.token_names = [];
     this.accounts = [];
-    this.player_labels = [];
     this.player_names = Object.keys(values);
-    this.player_data = new Map();
+    this.player_data = []
     this.update_all_data();
     for( let i of Object.keys(values)){
-      let p = {price:values[i][0],link:values[i][1]} as PlayerData;
-      let c = i + ": " + p.price;
-      this.player_labels.push(c);
-      this.player_data.set(i,p);
+      let p = {name:i,price:values[i][0],link:values[i][1]} as PlayerData;
+      this.player_data.push(p);
     }
 
   }
